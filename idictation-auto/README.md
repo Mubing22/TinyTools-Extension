@@ -2,7 +2,7 @@
 
 （idictation.cn）「看词选义」题型的自动作答工具
 
-单章 50~150 题，跑完约 4~8 分钟，正确率通常 92%~98%，纯本地脚本，不上传任何数据，不需要把账号密码写进配置
+单章 `50~150` 题，跑完约 `4~8` 分钟，正确率通常 92%~98%，纯本地脚本，不上传任何数据，不需要把账号密码写进配置
 
 > 这是自己刷词用的效率工具，请只用于自己的账号和自己的作业
 
@@ -13,18 +13,12 @@
 - **Windows**：双击 `start.bat`
 - **macOS / Linux**：终端里执行 `./start.sh`（首次要 `chmod +x start.sh`）
 
-需要装的东西它会自己装：
+他会自己做前置检查：
 
 - 没装 Node.js → 自动安装（依次尝试 winget / Chocolatey / Scoop，全都没有就下载官方免安装版解压到用户目录，**不需要管理员权限**）
 - Node 版本低于 22 → 自动升级
 - 没装 agent-browser → 自动 `npm install -g agent-browser`
 - 没装 Chrome → 自动改用 Edge / Brave / Chromium（Windows 自带 Edge）
-
-Windows 上真正干活的是 `ensure-node.ps1`，`start.bat` 只是把它叫起来，想先看看它判断出什么、不实际安装，可以执行：
-
-```powershell
-powershell -ExecutionPolicy Bypass -File ensure-node.ps1 -DryRun
-```
 
 装好之后，启动器还会做：
 
@@ -72,7 +66,7 @@ powershell -ExecutionPolicy Bypass -File ensure-node.ps1 -DryRun
 
 ---
 
-## 手动用法：一步一步来
+## 手动执行
 
 不想用启动器、或者想批量刷的时候看这节
 
