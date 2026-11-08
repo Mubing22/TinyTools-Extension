@@ -1,0 +1,27 @@
+{
+  "name": "idictation-auto",
+  "version": "1.0.0",
+  "description": "爱听写（idictation.cn）看词选义题型自动作答，基于 CDP 真实鼠标事件",
+  "type": "module",
+  "main": "src/solve.mjs",
+  "bin": {
+    "idictation-auto": "src/solve.mjs"
+  },
+  "scripts": {
+    "start": "node start.mjs",
+    "solve": "node src/solve.mjs"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "keywords": [
+    "idictation",
+    "automation",
+    "cdp",
+    "chrome-devtools-protocol",
+    "vocabulary",
+    "ielts"
+  ],
+  "license": "MIT",
+  "dependencies": {}
+}

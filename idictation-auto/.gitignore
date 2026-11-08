@@ -1,0 +1,13 @@
+# 依赖（本项目无第三方依赖，留着以防以后加）
+node_modules/
+
+# 个人配置与运行产物
+config.json
+*.log
+solve.log
+
+# 编辑器 / 系统
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
