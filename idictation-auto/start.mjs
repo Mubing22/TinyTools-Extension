@@ -10,7 +10,7 @@
  * 用法：双击 start.bat（Windows）或执行 ./start.sh（macOS/Linux）
  */
 
-import { spawnSync } from 'node:child_process';
+import { spawnSync, spawn } from 'node:child_process';
 import { createInterface } from 'node:readline';
 import { writeFileSync, existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -26,6 +26,7 @@ const SOLVE = join(HERE, 'src', 'solve.mjs');
 const CONFIG = join(HERE, 'config.json');
 const SITE = 'https://www.idictation.cn';
 
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const line = (s = '') => console.log(s);
 const step = (n, msg) => console.log(`\n[${n}] ${msg}`);
 const ok = (msg) => console.log(`    √ ${msg}`);
@@ -184,6 +185,58 @@ function judgePage(st) {
   return { ok: true, prog: st.prog };
 }
 
+/**
+ * 带调试端口启动本机浏览器，返回可用的 CDP 地址。
+ * 不需要 agent-browser 之类的中间层，少一个 100MB 级别的依赖
+ * 用的是固定 profile 目录，登录一次以后就一直有效。
+ */
+async function ensureBrowser(exe) {
+  const profileDir = join(HERE, '.browser-profile');
+
+  const alive = async (port) => {
+    try {
+      const res = await fetch(`http://127.0.0.1:${port}/json/version`, {
+        signal: AbortSignal.timeout(1200),
+      });
+      if (!res.ok) return null;
+      const info = await res.json();
+      return info.webSocketDebuggerUrl || null;
+    } catch {
+      return null;
+    }
+  };
+
+  // 之前启动过并且还开着，直接复用（登录状态也一起复用）
+  for (let p = 9222; p <= 9240; p++) {
+    const ws = await alive(p);
+    if (ws) return { port: p, ws, reused: true };
+  }
+
+  // 端口被别的程序占着就往后挪
+  let port = 9222;
+  while (await alive(port)) port++;
+
+  try {
+    spawn(exe, [
+      `--remote-debugging-port=${port}`,
+      `--user-data-dir=${profileDir}`,
+      '--no-first-run',
+      '--no-default-browser-check',
+      '--disable-features=Translate,MediaRouter',
+      SITE,
+    ], { detached: true, stdio: 'ignore' }).unref();
+  } catch {
+    return null;
+  }
+
+  for (let i = 0; i < 40; i++) {
+    await sleep(300);
+    const ws = await alive(port);
+    if (ws) return { port, ws, reused: false };
+  }
+  return null;
+}
+
 // ─────────────────────────── 1. Node 版本 ───────────────────────────
 
 step(1, '检查 Node.js');
@@ -195,60 +248,40 @@ if (nodeMajor < 22) {
 }
 ok(`Node ${process.versions.node}`);
 
-// ─────────────────────── 2. agent-browser ───────────────────────
+// ─────────────────────── 2. 找到浏览器 ───────────────────────
 
-step(2, '检查 agent-browser');
-let probe = run('agent-browser --help');
-if (probe.code !== 0) {
-  warn('没检测到 agent-browser，开始自动安装（需要联网，大约几十秒）…');
-
-  if (run('npm --version').code !== 0) {
-    warn('找不到 npm，说明 Node 没装好。请重新安装 Node.js 后再试。');
-    process.exit(1);
-  }
-
-  if (run('npm install -g agent-browser', { inherit: true }).code !== 0) {
-    warn('自动安装失败。请手动执行下面这行，然后重新启动本脚本：');
-    line('      npm install -g agent-browser');
-    if (process.platform !== 'win32') line('    提示权限不足就在前面加 sudo。');
-    process.exit(1);
-  }
-
-  if (run('agent-browser --help').code !== 0) {
-    warn('安装完成但无法运行，请关掉这个窗口重新打开后再试。');
-    process.exit(1);
-  }
+step(2, '查找浏览器');
+const browserPath = detectBrowser();
+if (!browserPath) {
+  warn('没找到 Chrome / Edge / Brave / Chromium 中的任何一个');
+  line('    Windows 一般自带 Edge，正常不会走到这里');
+  line('    若确实都没有，装一个 Chrome 再运行：https://www.google.com/chrome/');
+  process.exit(1);
 }
-ok('agent-browser 已就绪');
+const browserName = /msedge/i.test(browserPath) ? 'Edge'
+  : /brave/i.test(browserPath) ? 'Brave'
+  : /chromium/i.test(browserPath) ? 'Chromium'
+  : 'Chrome';
+ok(`使用本机的 ${browserName}`);
 
 // ─────────────────────── 3. 启动浏览器 ───────────────────────
 
 step(3, '启动浏览器');
-line('    会弹出一个浏览器窗口。必须是带窗口的模式，无头模式会被网站识别并卡白屏。');
+line('    会弹出一个浏览器窗口，工具靠它的调试端口操作页面');
 
-const browserPath = detectBrowser();
-if (browserPath) {
-  const name = /msedge/i.test(browserPath) ? 'Edge'
-    : /brave/i.test(browserPath) ? 'Brave'
-    : /chromium/i.test(browserPath) ? 'Chromium'
-    : 'Chrome';
-  ok(`使用本机的 ${name}`);
-} else {
-  warn('这台电脑没找到 Chrome / Edge / Brave，尝试用 agent-browser 自带的浏览器。');
-  line('    如果启动失败，执行 agent-browser install 下载内核后重试。');
-}
-
-const launchCmd = browserPath
-  ? `agent-browser --headed --executable-path "${browserPath}" open ${SITE}`
-  : `agent-browser --headed open ${SITE}`;
-
-if (run(launchCmd).code !== 0) {
-  warn('浏览器启动失败。可以试试：');
-  line('      agent-browser install');
-  line('    装完再重新运行本脚本。');
+const launched = await ensureBrowser(browserPath);
+if (!launched) {
+  warn('浏览器没能启动，或者调试端口没响应');
+  line('    常见原因：该浏览器正被别的程序占用，或被安全软件拦了');
+  line('    先把所有 Chrome / Edge 窗口关掉，再重新运行本脚本');
   process.exit(1);
 }
-ok('浏览器已打开站点');
+if (launched.reused) {
+  ok(`复用了已开着的浏览器（端口 ${launched.port}），登录状态还在`);
+} else {
+  ok(`浏览器已启动（端口 ${launched.port}）`);
+}
+const wsLine = launched.ws;
 
 // ─────────────────────── 4. 等用户操作 ───────────────────────
 
@@ -259,17 +292,10 @@ line('       停在「选择单词对应的释义」那道题上，先别答题�
 
 await ask('\n    弄好后回到这个窗口，按回车继续… ');
 
-// ─────────────────────── 5. 取调试地址 ───────────────────────
+// ─────────────────────── 5. 确认连接 ───────────────────────
 
-step(5, '连接浏览器');
-const wsLine = (run('agent-browser get cdp-url').out || '')
-  .split('\n').map((s) => s.trim()).find((s) => s.startsWith('ws://'));
-
-if (!wsLine) {
-  warn('拿不到调试地址。多半是浏览器被关了，重新跑一次本脚本即可。');
-  process.exit(1);
-}
-ok('已连接');
+step(5, '确认连接');
+ok('已连接浏览器');
 
 // 在真正开始前，确认页面确实停在能答题的位置；不对就告诉用户怎么改，而不是直接报错退出
 for (;;) {

@@ -17,8 +17,9 @@
 
 - 没装 Node.js → 自动安装（依次尝试 winget / Chocolatey / Scoop，全都没有就下载官方免安装版解压到用户目录，**不需要管理员权限**）
 - Node 版本低于 22 → 自动升级
-- 没装 agent-browser → 自动 `npm install -g agent-browser`
 - 没装 Chrome → 自动改用 Edge / Brave / Chromium（Windows 自带 Edge）
+
+> 早期版本依赖 `agent-browser`，那东西安装包有 100MB 以上，国内网络经常装不上，现在改成直接调用本机浏览器，**不需要 npm 安装任何东西**，只要 Node ≥ 22 和任意一个 Chromium 内核浏览器
 
 装好之后，启动器还会做：
 
@@ -88,29 +89,19 @@ node -v
 
 看到 `v22.x.x` 或更高的版本号就对了，低于 22 请重新下最新 LTS
 
-### 第 2 步：安装 agent-browser
+### 第 2 步：带调试端口启动浏览器
 
-这是驱动浏览器的工具，在同一个终端里执行：
-
-```bash
-npm install -g agent-browser
-```
-
-装完验证：
+不需要装任何额外工具，用系统自带的浏览器就行，Windows 上以 Chrome 为例：
 
 ```bash
-agent-browser --help
+"C:\Program Files\Google\Chrome\Application\chrome.exe" --remote-debugging-port=9222 --user-data-dir=%TEMP%\idict-profile https://www.idictation.cn/
 ```
 
-能打印出一堆命令说明就成功了
+Edge 把路径换成 `"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"` 即可
 
-### 第 3 步：让浏览器带窗口启动并登录
+`--remote-debugging-port` 是关键，工具靠这个端口操作页面；`--user-data-dir` 指定一个独立配置目录，登录状态会存在里面
 
-```bash
-agent-browser --headed open https://www.idictation.cn/login
-```
-
-`--headed` 不能省，省了就是无头模式，站点会识破
+### 第 3 步：在弹窗里登录
 
 弹出的窗口里手动输入你的手机号和密码登录，登录完停在站内任意页面
 
@@ -122,19 +113,19 @@ agent-browser --headed open https://www.idictation.cn/login
 
 ### 第 5 步：拿到浏览器调试地址
 
-回到终端执行：
-
-```bash
-agent-browser get cdp-url
-```
-
-会输出类似这样一行：
+浏览器里新开一个标签页，访问：
 
 ```
-ws://127.0.0.1:63781/devtools/browser/8f3c2a1e-1234-5678-9abc-def012345678
+http://127.0.0.1:9222/json/version
 ```
 
-**这行东西就是 `--cdp` 参数要的值**，复制它，注意：每次重新启动浏览器，这个地址都会变
+页面里 `webSocketDebuggerUrl` 那一行的值，类似：
+
+```
+ws://127.0.0.1:9222/devtools/browser/8f3c2a1e-1234-5678-9abc-def012345678
+```
+
+**这就是 `--cdp` 参数要的值**，复制它，注意：浏览器关掉重开后这个地址会变
 
 ### 第 6 步：准备配置（只有批量模式才需要）
 
@@ -186,7 +177,7 @@ node src/solve.mjs --cdp "把第 5 步的地址粘这里"
 
 | 参数 | 作用 |
 |---|---|
-| `--cdp <地址>` | **必填**，`agent-browser get cdp-url` 的输出 |
+| `--cdp <地址>` | **必填**，浏览器 `/json/version` 里的 `webSocketDebuggerUrl` |
 | `--here` | 只答当前页面这一章，不做章节跳转 |
 | `--chapters <文件>` | 临时指定章节列表文件，覆盖配置里的 `chapters` |
 | `--config <文件>` | 指定配置文件，默认 `./config.json` |
@@ -224,7 +215,7 @@ Firefox 和 Safari 用不了——本工具通过 CDP 驱动浏览器，这两�
 用了无头模式，重启浏览器时务必带上 `--headed`
 
 **终端报「没找到 idictation 的标签页」**
-浏览器里没停在该站点，或者 `--cdp` 地址过期了（重启浏览器后地址会变），重新执行 `agent-browser get cdp-url`
+浏览器里没停在该站点，或者 `--cdp` 地址过期了（重启浏览器后地址会变），重新访问 `http://127.0.0.1:9222/json/version` 拿新地址
 
 **同一道题反复失败，进度不涨**
 页面上有残留弹窗或遮罩挡住了选项，脚本每一轮都会自动清一次（关掉「继续听写 / 暂不 / 不再提醒」，并把 `.el-overlay` 设为隐藏），如果还卡，手动在浏览器窗口里点掉弹窗再重跑
