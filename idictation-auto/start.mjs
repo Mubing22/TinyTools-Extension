@@ -347,4 +347,3 @@ if (!rlClosed) {
   rl.close();
 }
 process.exit(solved.code === 0 ? 0 : 1);
-
