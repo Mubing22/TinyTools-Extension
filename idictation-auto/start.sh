@@ -86,3 +86,4 @@ echo "  注意：apt/dnf 仓库里的 nodejs 版本可能偏旧，如果装完�
 echo "        建议用 NodeSource 或官方安装包：https://nodejs.org/en/download"
 echo
 exit 1
+
