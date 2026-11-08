@@ -13,6 +13,8 @@
 - **Windows**：双击 `start.bat`
 - **macOS / Linux**：终端里执行 `./start.sh`（首次要 `chmod +x start.sh`）
 
+> 要自己敲命令的话，**先 cd 进 `idictation-auto` 这个文件夹**再执行，在别的目录敲会报 `Cannot find module`——不是工具坏了，是目录不对，详细的在下面「手动执行」开头
+
 他会自己做前置检查：
 
 - 没装 Node.js → 自动安装（依次尝试 winget / Chocolatey / Scoop，全都没有就下载官方免安装版解压到用户目录，**不需要管理员权限**）
