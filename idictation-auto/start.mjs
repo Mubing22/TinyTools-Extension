@@ -12,7 +12,7 @@
 
 import { spawnSync, spawn } from 'node:child_process';
 import { createInterface } from 'node:readline';
-import { writeFileSync, existsSync, readFileSync } from 'node:fs';
+import { existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -23,7 +23,6 @@ if (process.platform === 'win32') {
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const SOLVE = join(HERE, 'src', 'solve.mjs');
-const CONFIG = join(HERE, 'config.json');
 const SITE = 'https://www.idictation.cn';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -288,7 +287,7 @@ const wsLine = launched.ws;
 step(4, '请在浏览器里登录并选好章节');
 line('    ① 输入你自己的手机号和密码登录；');
 line('    ② 依次点「班级」→ 你要刷的词书卡片 → 任意一个章节，');
-line('       停在「选择单词对应的释义」那道题上，先别答题。');
+line('       停在第一道题目上，先别答题');
 
 await ask('\n    弄好后回到这个窗口，按回车继续… ');
 
@@ -321,72 +320,12 @@ for (;;) {
   console.log('');
 }
 
-// ─────────────────────── 6. 确认要刷的范围 ───────────────────────
+// ─────────────────────── 6. 开始答题 ───────────────────────
 
-step(6, '选择要刷的范围');
-line('    1 = 只刷当前打开的这一章（最省事）');
-line('    2 = 按章节列表批量刷（需要你输入词书名和章节名）');
+step(6, '开始答题');
+line('    只刷当前打开的这一章，想停就按 Ctrl + C。\n');
 
-let mode = (await ask('\n    请输入 1 或 2，直接回车默认 1：')).trim();
-if (mode !== '2') mode = '1';
-
-let solveArgs;
-
-if (mode === '1') {
-  ok('只刷当前章，不需要额外输入');
-  solveArgs = ['--here'];
-} else {
-  line('');
-  line('    词书标题：照抄页面上的书名（括号、空格都要一致）。');
-
-  let bookTitle = '';
-  while (!bookTitle) {
-    bookTitle = (await ask('    词书标题：')).trim();
-    if (!bookTitle) warn('不能为空，请重新输入。');
-  }
-
-  line('');
-  line('    章节标题：一行一个，抄页面弹窗里的章节名（同样要一字不差）。');
-  line('    输完直接按回车（空行）结束。');
-
-  const chapters = [];
-  for (;;) {
-    const t = (await ask(`    第 ${chapters.length + 1} 章：`)).trim();
-    if (!t) break;
-    chapters.push(t);
-  }
-
-  if (!chapters.length) {
-    warn('一章都没输入，改为只刷当前章。');
-    solveArgs = ['--here'];
-  } else {
-    const cfg = {
-      bookPath: '/main/book',
-      bookTitle,
-      chapters,
-      logPath: './solve.log',
-      maxFail: 25,
-      restart: false,
-    };
-    writeFileSync(CONFIG, JSON.stringify(cfg, null, 2) + '\n', 'utf8');
-    ok(`已保存 config.json，共 ${chapters.length} 章：${chapters.join('、')}`);
-    line('    以后想再跑同样的列表，直接重跑本脚本并选 2 就会复用它。');
-    solveArgs = ['--config', CONFIG];
-  }
-}
-
-// ─────────────────────── 7. 开始答题 ───────────────────────
-
-step(7, '开始答题');
-line('    想中途停止，按 Ctrl + C。\n');
-
-// 路径可能含空格，统一加引号后再拼命令行
-const node = process.execPath;
-const cmd = mode === '1' || solveArgs[0] === '--here'
-  ? `"${node}" "${SOLVE}" --here --cdp "${wsLine}"`
-  : `"${node}" "${SOLVE}" --config "${CONFIG}" --cdp "${wsLine}"`;
-
-const solved = run(cmd, { inherit: true });
+const solved = run(`"${process.execPath}" "${SOLVE}" --here --cdp "${wsLine}"`, { inherit: true });
 
 if (solved.code === 0) {
   line('\n────────────────────────────');
