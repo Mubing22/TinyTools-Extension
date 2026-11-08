@@ -10,19 +10,28 @@
 
 ## 使用方式
 
-装好 [Node.js](https://nodejs.org/)（LTS 版本，一路下一步）之后：
-
 - **Windows**：双击 `start.bat`
 - **macOS / Linux**：终端里执行 `./start.sh`（首次要 `chmod +x start.sh`）
 
-启动器前置检查：
+需要装的东西它会自己装：
 
-1. 检查 Node 版本，太低会提示你去升级
-2. 检查 `agent-browser`，**没装就自动 `npm install -g agent-browser` 帮你装上**
-3. 弹出一个浏览器窗口打开站点（自动带 `--headed`，免得被网站识破卡白屏）
-4. 停下来等你登录、进入某个章节的答题页
-5. 你按回车后，自动连接浏览器
-6. 问你要刷哪一章
+- 没装 Node.js → 自动安装（依次尝试 winget / Chocolatey / Scoop，全都没有就下载官方免安装版解压到用户目录，**不需要管理员权限**）
+- Node 版本低于 22 → 自动升级
+- 没装 agent-browser → 自动 `npm install -g agent-browser`
+- 没装 Chrome → 自动改用 Edge / Brave / Chromium（Windows 自带 Edge）
+
+Windows 上真正干活的是 `ensure-node.ps1`，`start.bat` 只是把它叫起来，想先看看它判断出什么、不实际安装，可以执行：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File ensure-node.ps1 -DryRun
+```
+
+装好之后，启动器还会做：
+
+1. 弹出一个浏览器窗口打开站点（自动带 `--headed`，免得被网站识破卡白屏）
+2. 停下来等你登录、进入某个章节的答题页
+3. 你按回车后，检查页面是否就绪，不对会告诉你该点哪里
+4. 问你要刷哪一章
 
 第 6 步会给你两个选择：
 
@@ -244,9 +253,10 @@ Firefox 和 Safari 用不了——本工具通过 CDP 驱动浏览器，这两�
 ├── README.md                 本文件
 ├── LICENSE                   MIT
 ├── package.json
-├── start.bat                 Windows 双击入口
+├── start.bat                 Windows 双击入口（只负责调用 ensure-node.ps1）
+├── ensure-node.ps1           Windows：检测并自动安装/升级 Node，然后启动
 ├── start.sh                  macOS / Linux 入口
-├── start.mjs                 启动器：自动补装依赖 + 引导流程
+├── start.mjs                 启动器：引导流程 + 连接浏览器
 ├── config.example.json       配置模板，复制成 config.json 再改
 └── src/
     └── solve.mjs             主脚本
