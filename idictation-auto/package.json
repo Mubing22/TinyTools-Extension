@@ -9,7 +9,9 @@
   },
   "scripts": {
     "start": "node start.mjs",
-    "solve": "node src/solve.mjs"
+    "solve": "node src/solve.mjs",
+    "check": "node scripts/check.mjs",
+    "verify": "npm run check"
   },
   "engines": {
     "node": ">=22.0.0"
