@@ -1,0 +1,11 @@
+{
+  "output": "article.html",
+  "navClass": "",
+  "navHref": "index.html",
+  "navLabel": "HOME",
+  "styles": [
+    "assets/css/pages/article.css",
+    "assets/css/components/navigation.css"
+  ],
+  "scripts": "<script src=\"assets/js/common.js\" data-particle-color=\"--particle\"></script>\n<script src=\"assets/data/notes_data.js\"></script>\n<script src=\"assets/vendor/marked/marked.umd.js\"></script>\n<script src=\"assets/js/article.js\"></script>"
+}

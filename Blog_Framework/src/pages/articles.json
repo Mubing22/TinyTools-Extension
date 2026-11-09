@@ -1,0 +1,12 @@
+{
+  "output": "Project.html",
+  "navClass": "",
+  "navHref": "index.html",
+  "navLabel": "HOME",
+  "styles": [
+    "assets/css/pages/projects.css",
+    "assets/css/pages/article-list.css",
+    "assets/css/components/navigation.css"
+  ],
+  "scripts": "<script src=\"assets/js/common.js\"></script>\n<script src=\"assets/data/notes_data.js\"></script>\n<script src=\"assets/js/article-list.js\"></script>\n<script src=\"assets/data/books.js\"></script>\n<script src=\"assets/js/projects.js\"></script>\n<script src=\"assets/js/ambient-rain.js\"></script>"
+}

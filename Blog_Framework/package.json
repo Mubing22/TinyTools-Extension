@@ -1,0 +1,16 @@
+{
+  "name": "daydream-blog-layout",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A minimal three-page static blog layout with theme reveal, article filters and ambient rain.",
+  "license": "MIT",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "start": "npm run build && node scripts/serve.js",
+    "build": "node scripts/build-site.js && node scripts/check.js",
+    "build:content": "node scripts/build-notes.js",
+    "check": "node scripts/check.js",
+    "test": "node --test",
+    "verify": "npm test && npm run build"
+  }
+}

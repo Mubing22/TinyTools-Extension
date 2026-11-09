@@ -1,0 +1,11 @@
+{
+  "output": "index.html",
+  "navClass": "landing-nav",
+  "navHref": "Project.html",
+  "navLabel": "BLOG",
+  "styles": [
+    "assets/css/pages/landing.css",
+    "assets/css/components/navigation.css"
+  ],
+  "scripts": "<script src=\"assets/js/landing.js\"></script>"
+}
