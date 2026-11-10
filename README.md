@@ -7,16 +7,16 @@
 | 工具 | 说明 | 平台 |
 | --- | --- | --- |
 | [Blog_Framework](./Blog_Framework) | 原生三页博客布局模板，独立配置、文章构建、分类与主题动画 | 静态站点 / Node.js 22+ |
-| [idictation-auto](./idictation-auto) | 爱听写（idictation.cn）词汇选择题自动作答，走浏览器 CDP 发真实点击 | Windows / macOS / Linux |
+| [idictation-words](./idictation-words) | 爱听写（idictation.cn）词汇选择题自动作答，走浏览器 CDP 发真实点击 | Windows / macOS / Linux |
 | [idictation-read](./idictation-read) | 爱听写雅思阅读真题自动作答，接口分批提交并控制答题时长 | Windows / macOS / Linux |
 
 ## 怎么用
 
-每个工具都是自包含的，用法写在它自己的 `README.md` 里，以 `idictation-auto` 为例：
+每个工具都是自包含的，用法写在它自己的 `README.md` 里，以 `idictation-words` 为例：
 
 ```bash
 git clone https://github.com/dayDReam-10/TinyTools.git
-cd TinyTools/idictation-auto
+cd TinyTools/idictation-words
 ```
 
 然后按该目录下 README 的步骤操作即可，不熟悉命令行的直接看里面那份说明，Windows 上是双击 `start.bat`

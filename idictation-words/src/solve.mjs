@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * idictation-auto — 爱听写（idictation.cn）「看词选义」自动作答
+ * idictation-words — 爱听写（idictation.cn）「看词选义」自动作答
  *
  * 工作方式：
  *   1. 题目卡片里存在一个 opacity:0 的节点，含当前单词的音标和完整释义（站点自己用来做答后反馈）；

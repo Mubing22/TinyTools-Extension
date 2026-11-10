@@ -1,4 +1,4 @@
-# idictation-auto
+# idictation-words
 
 （idictation.cn）「看词选义」题型的自动作答工具
 
@@ -13,7 +13,7 @@
 - **Windows**：双击 `start.bat`
 - **macOS / Linux**：终端里执行 `./start.sh`（首次要 `chmod +x start.sh`）
 
-> **先 cd 进 `idictation-auto` 这个文件夹**再执行，在别的目录敲会报 `Cannot find module`
+> **先 cd 进 `idictation-words` 这个文件夹**再执行，在别的目录敲会报 `Cannot find module`
 
 他会自己做前置检查：
 
@@ -42,7 +42,7 @@
 
 在工具目录运行 `npm run verify`，仅检查 JavaScript 语法、示例配置和启动文件，不启动浏览器、不登录或答题。
 
-仓库根目录的 `.github/workflows/idictation-auto-ci.yml` 会在本工具变更时，于 Windows、macOS、Linux 的 Node.js 22/24 上执行检查，并解析对应系统的启动脚本。这些检查不代表真实网站答题流程已通过端到端测试。
+仓库根目录的 `.github/workflows/idictation-words-ci.yml` 会在本工具变更时，于 Windows、macOS、Linux 的 Node.js 22/24 上执行检查，并解析对应系统的启动脚本。这些检查不代表真实网站答题流程已通过端到端测试。
 
 ## 原理实现
 
@@ -71,7 +71,7 @@
 
 ### 开头的警告：命令必须在工具目录里敲
 
-下面所有命令都必须在 `idictation-auto` 这个文件夹里执行，在别的目录（比如 `C:\Users\你的用户名>`）敲，会报这个错：
+下面所有命令都必须在 `idictation-words` 这个文件夹里执行，在别的目录（比如 `C:\Users\你的用户名>`）敲，会报这个错：
 
 ```
 Error: Cannot find module 'C:\Users\你的用户名\src\solve.mjs'
@@ -82,17 +82,17 @@ Error: Cannot find module 'C:\Users\你的用户名\src\solve.mjs'
 不会用 `cd` 命令的话，用这个笨办法，一次就能成：
 
 1. 打开「此电脑 / 文件资源管理器」
-2. 进到 `idictation-auto` 文件夹里面（能看到 `start.bat`、`README.md` 那一层）
+2. 进到 `idictation-words` 文件夹里面（能看到 `start.bat`、`README.md` 那一层）
 3. 在最上面的**地址栏**里输入 `cmd`，按回车
 4. 弹出的黑色窗口直接就在这个目录里了，把命令粘进去执行即可
 
 请先`cd`目录！！请先`cd`目录！！
 
 ```bash
-cd /d 你的路径\idictation-auto
+cd /d 你的路径\idictation-words
 ```
 
-macOS / Linux 是 `cd 你的路径/idictation-auto`，进没进对，敲 `dir`（Mac 用 `ls`）看有没有 `start.bat` 和 `src`，有就对了
+macOS / Linux 是 `cd 你的路径/idictation-words`，进没进对，敲 `dir`（Mac 用 `ls`）看有没有 `start.bat` 和 `src`，有就对了
 
 > 其实最省事的是双击 `start.bat`，它自己会切到正确目录，你不用关心这些
 

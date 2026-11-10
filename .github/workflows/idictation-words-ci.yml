@@ -1,9 +1,9 @@
-name: Idictation auto checks
+name: Idictation words checks
 on:
   push:
-    paths: ['idictation-auto/**', '.github/workflows/idictation-auto-ci.yml']
+    paths: ['idictation-words/**', '.github/workflows/idictation-words-ci.yml']
   pull_request:
-    paths: ['idictation-auto/**', '.github/workflows/idictation-auto-ci.yml']
+    paths: ['idictation-words/**', '.github/workflows/idictation-words-ci.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -18,7 +18,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     defaults:
       run:
-        working-directory: idictation-auto
+        working-directory: idictation-words
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020

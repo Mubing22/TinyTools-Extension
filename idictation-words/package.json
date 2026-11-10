@@ -1,11 +1,11 @@
 {
-  "name": "idictation-auto",
+  "name": "idictation-words",
   "version": "1.0.0",
   "description": "爱听写（idictation.cn）看词选义题型自动作答，基于 CDP 真实鼠标事件",
   "type": "module",
   "main": "src/solve.mjs",
   "bin": {
-    "idictation-auto": "src/solve.mjs"
+    "idictation-words": "src/solve.mjs"
   },
   "scripts": {
     "start": "node start.mjs",
