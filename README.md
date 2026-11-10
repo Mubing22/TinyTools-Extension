@@ -8,6 +8,7 @@
 | --- | --- | --- |
 | [Blog_Framework](./Blog_Framework) | 原生三页博客布局模板，独立配置、文章构建、分类与主题动画 | 静态站点 / Node.js 22+ |
 | [idictation-auto](./idictation-auto) | 爱听写（idictation.cn）词汇选择题自动作答，走浏览器 CDP 发真实点击 | Windows / macOS / Linux |
+| [idictation-read](./idictation-read) | 爱听写雅思阅读真题自动作答，接口分批提交并控制答题时长 | Windows / macOS / Linux |
 
 ## 怎么用
 
