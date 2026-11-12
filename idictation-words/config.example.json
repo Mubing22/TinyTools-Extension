@@ -1,8 +1,0 @@
-{
-  "bookPath": "/main/book",
-  "bookTitle": "",
-  "chapters": [],
-  "logPath": "./solve.log",
-  "maxFail": 25,
-  "restart": false
-}

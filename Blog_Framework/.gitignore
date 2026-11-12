@@ -1,7 +1,0 @@
-node_modules/
-dist/
-coverage/
-.site-build-*/
-.local/
-*.log
-.DS_Store
