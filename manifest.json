@@ -1,0 +1,48 @@
+{
+  "manifest_version": 3,
+  "name": "爱听写工具箱",
+  "version": "2.9.0",
+  "description": "本地 Pro 显示 + 自动写词书 + 自动写阅读真题。全部在本机运行。",
+  "minimum_chrome_version": "111",
+  "permissions": [
+    "debugger",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://www.idictation.cn/*",
+    "https://idictation.cn/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.idictation.cn/*",
+        "https://idictation.cn/*"
+      ],
+      "js": [
+        "content-vip.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN",
+      "all_frames": false
+    },
+    {
+      "matches": [
+        "https://www.idictation.cn/*",
+        "https://idictation.cn/*"
+      ],
+      "js": [
+        "content-ui.js"
+      ],
+      "run_at": "document_idle",
+      "world": "ISOLATED",
+      "all_frames": false
+    }
+  ],
+  "action": {
+    "default_title": "爱听写工具箱",
+    "default_popup": "popup.html"
+  }
+}
